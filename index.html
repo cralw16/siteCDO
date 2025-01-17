@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Intimações RCC</title>
+    <link rel="icon" href="https://www.habbo.com.br/habbo-imaging/badge/b09014s43131s50134s17013s170151e0a30a5a81c1fcb98d10054d03bc593.gif">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+    --primary-color: #dcb800;          
+    --secondary-color: #ffd700;        
+    --highlight-color: #ffed4a;       
+    --accent-color: #b89b00;          
+    --text-color: #ffffff;
+    --text-dark: #333333;
+    --background-dark: rgba(220, 184, 0, 0.15);
+    --background-light: rgba(255, 215, 0, 0.1);
+    --gradient-start: #dcb800;
+    --gradient-middle: #ffd700;
+    --gradient-end: #ffed4a;
+    --glass-background: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, 
+        var(--gradient-start), 
+        var(--gradient-middle), 
+        var(--gradient-end),
+        var(--gradient-middle),
+        var(--gradient-start)
+    );
+    background-size: 400% 400%;
+    animation: gradient 8s ease infinite;
+    color: var(--text-dark);
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 50% 100%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 0%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 20px rgba(220, 184, 0, 0.5); }
+    50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.7); }
+    100% { box-shadow: 0 0 20px rgba(220, 184, 0, 0.5); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+header {
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px var(--glass-shadow);
+    border-bottom: 1px solid var(--glass-border);
+    animation: slideIn 1s ease-out;
+    position: relative;
+    border-radius: 0 0 40px 40px;
+    margin: 0 30px;
+    z-index: 10;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--glass-background);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 0 0 40px 40px;
+    z-index: -1;
+}
+
+.header_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.header_img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid var(--text-color);
+    animation: float 6s ease-in-out infinite;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.header_img:hover {
+    transform: scale(1.1) rotate(10deg);
+}
+
+header span {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(to right, var(--text-dark), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    animation: glow 3s ease-in-out infinite;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+    animation: slideIn 1s ease-out;
+}
+
+.main_tittle {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.tittle_header {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text-dark), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    animation: float 6s ease-in-out infinite;
+}
+
+.tittle_header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    border-radius: 2px;
+}
+
+.tittle_description {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-top: 1rem;
+    opacity: 0.9;
+    max-width: 800px;
+    margin: 1rem auto 0;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 30px;
+    padding: 2.5rem;
+    margin: 2rem auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.1),
+        inset 0 0 30px rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    animation: slideIn 1s ease-out;
+    max-width: 850px;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.15),
+        inset 0 0 50px rgba(255, 215, 0, 0.2);
+}
+
+.details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.input-box {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+textarea#aviso_comentario {
+    width: 100%;
+    min-height: 100px;
+    padding: 1rem 1.2rem;
+    border: 2px solid rgba(220, 184, 0, 0.2);
+    border-radius: 12px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    color: var(--text-dark);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    resize: vertical;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.5;
+    overflow-y: scroll;
+}
+
+.input-note {
+    background: var(--background-light);
+    padding: 0.8rem 1rem 0.8rem 2rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    border-left: 3px solid var(--primary-color);
+    line-height: 1.4;
+    position: relative;
+}
+
+.input-note::before {
+    content: '➤';
+    position: absolute;
+    left: 0.7rem;
+    color: var(--primary-color);
+}
+
+.details_span {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: var(--text-dark);
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.details_span::before {
+    content: '➤';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    animation: float 3s ease-in-out infinite;
+}
+
+input, select {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: 2px solid rgba(220, 184, 0, 0.2);
+    border-radius: 15px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    color: var(--text-dark);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.05),
+        0 0 0 transparent;
+}
+
+input:hover, select:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(220, 184, 0, 0.4);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.05),
+        0 4px 15px rgba(220, 184, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 
+        0 0 0 3px rgba(220, 184, 0, 0.2),
+        0 8px 25px rgba(220, 184, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+select {
+    appearance: none;
+    background: linear-gradient(to right, rgba(220, 184, 0, 0.05), rgba(255, 215, 0, 0.1));
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23dcb800' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5em;
+    padding-right: 3rem;
+    cursor: pointer;
+    border: 2px solid rgba(220, 184, 0, 0.2);
+    transition: all 0.3s ease;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+
+.button {
+    margin-top: 2.5rem;
+    text-align: center;
+}
+
+.button input {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1.2rem 2.5rem;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    width: auto;
+    min-width: 250px;
+    box-shadow: 0 5px 15px rgba(220, 184, 0, 0.3);
+}
+
+.button input::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    transition: 0.6s;
+}
+
+.button input:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(220, 184, 0, 0.4);
+}
+
+.button input:hover::before {
+    left: 100%;
+}
+
+.button input:active {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 184, 0, 0.3);
+}
+
+.button input:disabled {
+    background: linear-gradient(135deg, #d1d1d1, #e0e0e0);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(220, 184, 0, 0.95);
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    transform: translateY(100px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.toast-message {
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 2.5rem;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    transform: translateY(-50px);
+    transition: all 0.3s ease;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal.active .modal-content {
+    transform: translateY(0);
+}
+
+.shimmer {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(220, 184, 0, 0.1);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--primary-color), var(--secondary-color));
+    border-radius: 6px;
+    border: 3px solid rgba(220, 184, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(var(--secondary-color), var(--highlight-color));
+}
+
+textarea#aviso_comentario:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(220, 184, 0, 0.4);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.05),
+        0 4px 15px rgba(220, 184, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+textarea#aviso_comentario:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 
+        0 0 0 3px rgba(220, 184, 0, 0.2),
+        0 8px 25px rgba(220, 184, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+select:hover {
+    background: linear-gradient(to right, rgba(220, 184, 0, 0.1), rgba(255, 215, 0, 0.2));
+    border-color: rgba(220, 184, 0, 0.4);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.05),
+        0 4px 15px rgba(220, 184, 0, 0.15);
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: linear-gradient(to right, rgba(220, 184, 0, 0.15), rgba(255, 215, 0, 0.25));
+    box-shadow: 
+        0 0 0 3px rgba(220, 184, 0, 0.2),
+        0 8px 25px rgba(220, 184, 0, 0.2);
+}
+
+textarea::-webkit-scrollbar {
+    width: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: rgba(220, 184, 0, 0.1);
+    border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--primary-color), var(--secondary-color));
+    border-radius: 4px;
+    border: 2px solid rgba(220, 184, 0, 0.1);
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(var(--secondary-color), var(--highlight-color));
+}
+
+select {
+    appearance: none;
+    background: linear-gradient(to right, rgba(220, 184, 0, 0.05), rgba(255, 215, 0, 0.1));
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23dcb800' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5em;
+    padding-right: 3rem;
+    cursor: pointer;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: 2px solid rgba(220, 184, 0, 0.2);
+    border-radius: 15px;
+    font-size: 1rem;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+}
+
+select option {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: var(--text-dark);
+    padding: 12px;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(220, 184, 0, 0.1);
+}
+
+select option:checked {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    color: var(--text-dark) !important;
+    font-weight: 500;
+}
+
+select option:hover {
+    background: linear-gradient(135deg, rgba(220, 184, 0, 0.15), rgba(255, 215, 0, 0.25)) !important;
+    color: var(--text-dark) !important;
+}
+
+select option:disabled {
+    color: rgba(51, 51, 51, 0.5);
+    background: rgba(255, 255, 255, 0.98);
+    font-style: italic;
+}
+
+select:hover {
+    background: linear-gradient(to right, rgba(220, 184, 0, 0.1), rgba(255, 215, 0, 0.2));
+    border-color: rgba(220, 184, 0, 0.4);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.05),
+        0 4px 15px rgba(220, 184, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: linear-gradient(to right, rgba(220, 184, 0, 0.15), rgba(255, 215, 0, 0.25));
+    box-shadow: 
+        0 0 0 3px rgba(220, 184, 0, 0.2),
+        0 8px 25px rgba(220, 184, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+#enviar_dis {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+#enviar_dis input {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+    animation: pulse 1.5s infinite;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1.2rem 2.5rem;
+    border: none;
+    border-radius: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    width: auto;
+    min-width: 250px;
+}
+
+#enviar_dis input:disabled {
+    background: linear-gradient(135deg, #d1d1d1, #e0e0e0);
+    cursor: not-allowed;
+    opacity: 0.7;
+    color: var(--text-dark);
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+@media (max-width: 1200px) {
+    .container {
+        width: 95%;
+    }
+
+    .tittle_header {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .details {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+}
+
+    .tittle_header {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        margin: 0 15px;
+        padding: 1.5rem;
+    }
+
+    .header_container {
+        gap: 1rem;
+    }
+
+    .header_img {
+        width: 50px;
+        height: 50px;
+    }
+
+    header span {
+        font-size: 2rem;
+    }
+
+    .tittle_header {
+        font-size: 2rem;
+    }
+
+    .tittle_description {
+        font-size: 1rem;
+    }
+
+    .button input {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+
+    .details_span {
+        font-size: 1rem;
+    }
+
+    input, select {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .toast {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+    }
+}
+
+</style>
+
+</head>
+<body>
+    <header>
+        <div class="header_container">
+            <img src="https://www.habbo.com.br/habbo-imaging/badge/b09014s43131s50134s17013s170151e0a30a5a81c1fcb98d10054d03bc593.gif" alt="Logo RCC" class="header_img">
+            <span>Polícia RCC</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main_tittle">
+            <h1 class="tittle_header">CARTA DE INTIMAÇÃO</h1>
+            <p class="tittle_description">A mensagem privada será enviada automaticamente após preencher todos os campos abaixo.</p>
+        </div>
+
+        <div class="card">
+            <form id="enviar_mp" action="#">
+                <div class="details">
+                    <div class="input-box">
+                        <label class="details_span">Tipo de notificação</label>
+                        <select id="aviso_select" required>
+                            <option value="" disabled selected>Selecione o tipo de notificação</option>
+                            <option value="advertência verbal">Notificação de advertência verbal</option>
+                            <option value="50 medalhas efetivas negativas">Notificação de 50 medalhas efetivas negativas</option>
+                            <option value="advertência escrita">Notificação de advertência escrita</option>
+                            <option value="rebaixamento">Notificação de rebaixamento</option>
+                        </select>
+                    </div>
+
+                    <div class="input-box">
+                        <label class="details_span">Nickname do militar punido</label>
+                        <input id="aviso_nick" type="text" placeholder="Exemplo: Gmf/cralw16" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label class="details_span">Crime(s) cometido(s)</label>
+                        <input id="aviso_crime" class="notif_crime" type="text" placeholder="Exemplo: abandono de dever/negligência, inciso V." required>
+                    </div>
+
+                    <div class="input-box">
+                        <label class="details_span">Comprovação</label>
+                        <input id="aviso_comprovacao" class="notif_comprovacao" type="text" placeholder="Insira o link dos prints comprobatórios." required>
+                    </div>
+
+                    <div class="input-box">
+    <label class="details_span">Comentário</label>
+    <textarea 
+        id="aviso_comentario" 
+        class="notif_comentario" 
+        placeholder="Descreva a situação que acarretou a punição."
+        required
+    ></textarea>
+    <div class="input-note">
+         O comentário deve conter, detalhadamente, o motivo da punição e orientações sobre como corrigir e não cometer o mesmo erro novamente.
+    </div>
+</div>
+
+                <div class="button-container">
+                    <div class="button" id="enviar">
+                        <input type="button" value="ENVIAR MENSAGEM" onclick="fill_mp()">
+                    </div>
+                    <div class="button" style="display: none;" id="enviar_dis">
+                        <input type="submit" value="Enviando...Aguarde!" disabled>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+   <textarea style="display: none;" id="fa-generated-message"></textarea>   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://forumeiros.github.io/assets/src/form-generator/form-replace.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+ 
+$(document).ready(function(){
+    $('#select_options').on('change',function(){
+        $(".card").hide();
+        $("#" + $(this).val()).show();
+    }).change();
+    const urlParams = new URLSearchParams(window.location.search).forEach(function(x,y){
+        if(y == 'auto_sent' && x == "sim"){fill_mp()}else if(y != 'auto_sent'){document.getElementById(y).value = x}
+    });
+})
+$("#enviar_mp").submit(function(event){
+    event.preventDefault();
+    fill_mp(event)
+});
+ 
+ 
+ 
+ 
+ 
+ 
+function fill_mp(){
+    var isValid = true;
+    $("#enviar_mp").find("input").each(function(){
+        if($(this).val() == ""){isValid = false};
+    })
+    var title = "Carta de Intimação - ABRA!";
+ 
+    if(isValid == true){
+        document.getElementById('enviar').style.display = 'none';
+        document.getElementById('enviar_dis').style.display = 'flex';
+        var lista = $("#aviso_nick").val().replaceAll(' ', '').replaceAll('/', ' / ').split(' / ');
+        var message = create_exp('Inatividade');
+        console.log(message)
+        lista.forEach(function(n){
+            send_MP(title, n, message);
+        })
+        location.href = "https://www.policiarcc.com/privmsg?folder=outbox";
+    }
+    // SE VALIDAÇÃO NÃO É VERIFICADA:
+ 
+    else{alert('Preencha todos os campos!')};
+    return isValid;}
+ 
+function create_exp(motivo){
+             var tipo = $('#aviso_select').val();
+             var nick = $('#aviso_nick').val();
+             var crime = $('#aviso_crime').val();
+             var comentario = $('#aviso_comentario').val();
+             var comprovacao = $('#aviso_comprovacao').val();
+ 
+ 
+    var message = '[table][tr][td][img]https://i.servimg.com/u/f73/20/34/27/93/png_2032.png[/img][/td][/tr]\n\n' + '[tr][td][font=Poppins][b]Saudações, {USERNAME}![/b]\n\n' + 'Venho, por meio desta mensagem privada, notificar que você está sendo punido com [b]' + tipo + '[/b] pelo crime de [b]' + crime + '[/b].[/font]\n\n' + '[table style="color: rgb(F5, F5, F5);  border-color: rgb(F5, F5, F5);" bgcolor="#F5F5F5" border="1"][tr][td][left][font=Poppins][b]Explicação:[/b] ' + comentario + '\n' + '[b]Comprovação:[/b] ' + comprovacao + '[/font][/left][/td][/tr][/table]\n' + '[font=Poppins]A Policia Militar Revolução Contra o Crime preza pela justiça, doutrinação e disciplina de nossos militares.\n' + 'Vale lembrar também que toda carreira é feita de altos e baixos, não desanime!\n\n' + '[scroll][b]Em casos de dúvidas ou objeções, me procure no Habbo Hotel.[/b][/scroll][/font]\n\n' + '[img]https://i.servimg.com/u/f36/19/81/06/25/div_cd10.png[/img][/td][/tr][/table]'
+    
+    
+  
+    
+    return message;
+}
+function send_MP(title, user, message){
+    jQuery.post('/privmsg',{
+        folder: 'inbox',
+        mode: 'post',
+        post: '1',
+        username: user,
+        subject: title,
+        message: message
+    }).done(function () {
+        console.log("Mensagem Privada enviada para " + user);
+    }).fail(function (){
+        console.log("Erro");
+    })
+}
+function retorna_horario(){
+    var horario = new Date();
+        horario.setMinutes(horario.getMinutes() + horario.getTimezoneOffset() - 180);
+    var data_hoje = horario.getDate();
+        if(data_hoje<10){data_hoje = '0' + data_hoje};
+    const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul","Ago","Set","Out","Nov","Dez"];
+    var mes_hoje = meses[horario.getMonth()];
+    var ano_hoje = horario.getFullYear();
+    var retornar = data_hoje + ' ' + mes_hoje + ' ' + ano_hoje;
+ 
+    return retornar;
+}
+</script>
+</body>
+</html>
